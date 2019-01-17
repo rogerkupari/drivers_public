@@ -23,4 +23,4 @@ module_init(blink_init);
 
 module_exit(blink_exit);
 
-MODULE_LICENSE("Dual BSD/GPL");
+MODULE_LICENSE("GPL");
