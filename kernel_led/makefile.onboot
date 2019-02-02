@@ -6,8 +6,10 @@ vers = $(shell uname -r)
 all:
 	make -C /lib/modules/$(vers)/build M=$(shell pwd) modules
 	sudo cp $(moduuli).ko /lib/modules/$(vers)
+	sudo bash -c "echo $(moduuli) >> /etc/modules"
 	sudo depmod -a
 clean:
 	make -C /lib/modules/$(vers)/build M=$(shell pwd) clean
 	sudo rm /lib/modules/$(vers)/$(moduuli).ko
+	sudo bash -c "sed -i '/\<$(moduuli)\>/d' /etc/modules"
 	sudo depmod -a
