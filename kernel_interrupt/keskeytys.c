@@ -8,12 +8,10 @@
 // kernel_interrupt/keskeytys.c
 
 static unsigned int keskeytyspalvelunro;
-
 static irq_handler_t keskeytyskasittely(unsigned int irq, void *dev_id, struct pt_regs *regs);
 
 static int __init keskeytys_init(void)
 {
-	int ekapyynto = 0;
 
 	// ACT-led tilaan 0
 	gpio_direction_output(48, 0);
@@ -21,13 +19,17 @@ static int __init keskeytys_init(void)
 	// Fyysinen gpio pinni 3 inputiksi
 	gpio_direction_input(252);
 
-	// karkivarahtelyn arvioitu kesto max 15 ms
-        gpio_set_debounce(252, 15);
+	// karkivarahtelyn arvioitu kesto max 150 ms
+        gpio_set_debounce(252, 150);
 
 	// keskeytyspalvelun identifikaattori
 	keskeytyspalvelunro = gpio_to_irq(252);
 
-	ekapyynto = request_irq(keskeytyspalvelunro, (irq_handler_t) keskeytyskasittely, IRQF_TRIGGER_FALLING, "painikekeskeytys", NULL);
+	// Rekisteroidaan keskeytyskasittely: identifikaattori, keskeytysfunktio, laskeva reuna, palvelun alias
+	if(request_irq(keskeytyspalvelunro, (irq_handler_t) keskeytyskasittely, IRQF_TRIGGER_FALLING, "painikekeskeytys", NULL)){
+
+	return -1;
+	}
 
 	printk(KERN_ALERT "keskeytysmoduuli init, led: %d painike %d, keskeytyspalvelunro: %d  \n", gpio_get_value(48), gpio_get_value(252), keskeytyspalvelunro);
 	return 0;
