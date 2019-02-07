@@ -27,7 +27,7 @@ static int __init keskeytys_init(void)
 	// keskeytyspalvelun identifikaattori
 	keskeytyspalvelunro = gpio_to_irq(252);
 
-	ekapyynto = request_irq(252, (irq_handler_t) keskeytyskasittely, IRQF_TRIGGER_FALLING, "painikekeskeytys", NULL);
+	ekapyynto = request_irq(keskeytyspalvelunro, (irq_handler_t) keskeytyskasittely, IRQF_TRIGGER_FALLING, "painikekeskeytys", NULL);
 
 	printk(KERN_ALERT "keskeytysmoduuli init, led: %d painike %d, keskeytyspalvelunro: %d  \n", gpio_get_value(48), gpio_get_value(252), keskeytyspalvelunro);
 	return 0;
@@ -47,9 +47,15 @@ static void __exit keskeytys_exit(void)
 static irq_handler_t keskeytyskasittely(unsigned int irq, void *dev_id, struct pt_regs *regs)
 {
 	if(gpio_get_value(48) == 1)
-	 gpio_direction_output(48, 1);
+	{
+	 gpio_direction_output(48, 0);
+	}
 	else
-	  gpio_direction_output(48, 0);
+	{
+	  gpio_direction_output(48, 1);
+	}
+
+	printk(KERN_ALERT "keskeytyspalvelu, led: %d painike %d  \n", gpio_get_value(48), gpio_get_value(252));
 	return (irq_handler_t) IRQ_HANDLED;
 
 }
