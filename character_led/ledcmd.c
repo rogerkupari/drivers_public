@@ -23,27 +23,43 @@ static dev_t laitenumero;
 static struct cdev rajapinta;
 static struct class *rajapintaluokka;
 
+static char viesti[6] = {0};
+
+
 
 // Character devicen lukemisen funktion prototyyppi
-static ssize_t lue_data(struct file *, const char *, size_t, loff_t *);
-
+static ssize_t lue_data(struct file *, const char __user *, size_t, loff_t *);
+static int     suljettu(struct inode *, struct file *);
 
 
 static struct file_operations komento =
 {
 	.write = lue_data,
+	.release = suljettu,
 	.owner = THIS_MODULE
 };
 
 
-static ssize_t lue_data(struct file *tiedosto, const char *puskuri, size_t pituus, loff_t *offset)
+static ssize_t lue_data(struct file *tiedosto, const char __user *puskuri, size_t pituus, loff_t *offset)
 {
-	char tila[5];
-	sprintf(tila, "%s", buffer);
 
-	printk(KERN_ALERT "%s", buffer);
+	short virhe;
+	virhe = copy_from_user(viesti, puskuri, pituus);
+
+	if(virhe < 0)
+	{
+		printk(KERN_ALERT "/dev/led -tietoa ei voida lukea %d ", virhe);
+		return -1;
+	}
+	printk(KERN_ALERT "viesti %s", viesti);
 
 	return pituus;
+}
+
+static int suljettu(struct inode *inode, struct file *file)
+{
+	printk(KERN_INFO "/dev/led suljettu");
+	return 0;
 }
 
 
@@ -67,6 +83,7 @@ static int __init char_init(void)
 
 	if(rajapintaluokka == NULL)
 	{
+		printk(KERN_ALERT "ledin character devicen luokan tekemisessa virhe");
 		return -1;
 	}
 	// osoitin luokkaan, osoitin lapsi-chrdeviin, laitenumero, 
@@ -74,6 +91,8 @@ static int __init char_init(void)
 	{
 		 class_destroy(rajapintaluokka);
                  unregister_chrdev_region(laitenumero, 1);
+		 printk(KERN_ALERT "ledin character devicen tekemisessa virhe");
+		 return -1;
 	}
 
 	// character devicen alustus
@@ -84,6 +103,8 @@ static int __init char_init(void)
 		device_destroy(rajapintaluokka, laitenumero);
                 class_destroy(rajapintaluokka);
                 unregister_chrdev_region(laitenumero, 1);
+		 printk(KERN_ALERT "ledin character devicen lisayksessa virhe");
+		return -1;
 
 	}
 
