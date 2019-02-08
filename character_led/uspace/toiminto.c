@@ -5,6 +5,7 @@
 
 
 
+
 void toteuta(char *komento[])
 {
 
