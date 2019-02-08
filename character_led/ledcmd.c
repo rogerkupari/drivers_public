@@ -23,7 +23,7 @@ static dev_t laitenumero;
 static struct cdev rajapinta;
 static struct class *rajapintaluokka;
 
-static char viesti[6] = {0};
+static char viesti[1] = {0};
 
 
 
@@ -51,7 +51,17 @@ static ssize_t lue_data(struct file *tiedosto, const char __user *puskuri, size_
 		printk(KERN_ALERT "/dev/led -tietoa ei voida lukea %d ", virhe);
 		return -1;
 	}
-	printk(KERN_ALERT "viesti %s", viesti);
+	printk(KERN_ALERT "ledinohjauskomento vastaanotettu %s", viesti);
+	if(strcmp(viesti, "1") == 0)
+	{
+		gpio_direction_output(48, 1);
+	}
+	if(strcmp(viesti, "0") == 0)
+        {
+                gpio_direction_output(48, 0);
+        }
+
+	printk(KERN_ALERT "ledi ohjattu tilaan %d", gpio_get_value(48));
 
 	return pituus;
 }

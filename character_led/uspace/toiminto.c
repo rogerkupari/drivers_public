@@ -18,12 +18,12 @@ void toteuta(char *komento[])
 	}
 
 
-	if(write(tiedosto, komento, 5) < 0)
+	if(write(tiedosto, komento[2], 1) < 0)
 	{
 		printf("virhe kirjoitettaessa komentoa /dev/led \n");
 	}
 
 
-	printf("komento suoritettu");
+	printf("komento suoritettu \n");
 
 }

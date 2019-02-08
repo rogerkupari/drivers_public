@@ -11,9 +11,11 @@ all:
 	sudo depmod -a
 	make -C $(shell pwd)/uspace
 	sudo modprobe ledcmd
+	sudo cp $(shell pwd)/uspace/ledohjaus /usr/local/bin
 clean:
 	make -C /lib/modules/$(vers)/build M=$(shell pwd) clean
 	sudo rm /lib/modules/$(vers)/$(moduuli).ko
 	sudo depmod -a
 	make -C $(shell pwd)/uspace clean
-	sudo modprobe -r ledcmd
+	$(shell sudo modprobe -r ledcmd)
+	sudo rm /usr/local/bin/ledohjaus
