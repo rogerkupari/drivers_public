@@ -4,6 +4,18 @@
 
 
 
+
+/*///////////////////////////////////
+**  character_led/uspace/ohjaus.c  **
+**  Author: Roger Kupari	   **
+**  date: 09.02.2019		   **
+*////////////////////////////////////
+
+
+
+
+// Paaohjelma, argumenttina odotetaan led <numero>
+// jos nain on, kutsutaan toteuta funktiota (toiminto.c), muutoin return -1
 int main(int argc, char *argv[])
 {
 

@@ -13,7 +13,12 @@
 
 
 
-// character_led/ledcmd.c
+/*///////////////////////////////////
+**  character_led/uspace/ledcmd.c  **
+**  Author: Roger Kupari           **
+**  date: 09.02.2019               **
+*////////////////////////////////////
+
 
 
 
@@ -22,6 +27,7 @@ static dev_t laitenumero;
 static struct cdev rajapinta;
 static struct class *rajapintaluokka;
 
+// kayttajan kirjoitus
 static char viesti[1] = {0};
 
 
@@ -30,7 +36,7 @@ static char viesti[1] = {0};
 static ssize_t lue_data(struct file *, const char __user *, size_t, loff_t *);
 static int     suljettu(struct inode *, struct file *);
 
-
+// Character devicen toiminnot, raportissa write=lue ristiriita selitetty
 static struct file_operations komento =
 {
 	.write = lue_data,
@@ -38,7 +44,7 @@ static struct file_operations komento =
 	.owner = THIS_MODULE
 };
 
-
+// Luetaan kayttajan kirjoittama data
 static ssize_t lue_data(struct file *tiedosto, const char __user *puskuri, size_t pituus, loff_t *offset)
 {
 
@@ -65,6 +71,7 @@ static ssize_t lue_data(struct file *tiedosto, const char __user *puskuri, size_
 	return pituus;
 }
 
+// moduuli suorittaa tata kun /dev/led on suljettu kirjoituksen jalkeen
 static int suljettu(struct inode *inode, struct file *file)
 {
 	printk(KERN_INFO "/dev/led suljettu");
@@ -130,6 +137,7 @@ static void __exit char_exit(void)
 	// nollataan ACT-led
 	gpio_direction_output(48, 0);
 
+	// poistetaan init-funktiossa varatut resurssit
 	cdev_del(&rajapinta);
 	device_destroy(rajapintaluokka, laitenumero);
         class_destroy(rajapintaluokka);
