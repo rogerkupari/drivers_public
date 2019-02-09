@@ -3,12 +3,10 @@
 #include <linux/gpio.h>
 
 
-// filesystem ja tassa moduulissa tieto kayttajalta moduulille
+// Uusia headereita
 #include <linux/fs.h>
 #include <linux/uaccess.h>
-// mm. sprintf -funktio
 #include <linux/kernel.h>
-// cdev_init
 #include <linux/cdev.h>
 
 
